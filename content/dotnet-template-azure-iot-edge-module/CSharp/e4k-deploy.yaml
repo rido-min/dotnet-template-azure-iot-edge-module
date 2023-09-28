@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samplemodule
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: samplemodule
+  template:
+    metadata:
+      labels:
+        app: samplemodule
+    spec:
+      containers:
+      - name: samplemodule
+        image: <repository>
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: IOTEDGE_IOTHUBHOSTNAME
+          value: <hub>.azure-devices.net
+        - name: IOTEDGE_DEVICEID
+          value: <EdgeDeviceId>
+        - name: IOTEDGE_MODULEID
+          value: samplemodule
+        - name: AZEDGE_MQTT_GATEWAY_HOST_NAME
+          value: azedge-dmqtt-frontend
+        - name: AZEDGE_MQTT_GATEWAY_CA_FILE
+          value: /certs/ca.pem
+        volumeMounts:
+        - name: mqtt-client-token
+          mountPath: /var/run/secrets/tokens
+        - name: ca
+          mountPath: /certs/ca.pem 
+          subPath: ca.pem
+      volumes:
+      - name: mqtt-client-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: mqtt-client-token
+              audience: azedge-modules
+      - name: ca 
+        configMap:
+          name: azedge-broker-ca
+          items:
+            - key: ca.pem 
+              path: ca.pem

@@ -9,7 +9,7 @@ The template will set up all necessary files for you to focus on functionality p
 
 ## Get Started
 
-Make sure you have [.NET 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) installed.
+Make sure you have [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed.
 
 Run `dotnet` command to install the template:
 

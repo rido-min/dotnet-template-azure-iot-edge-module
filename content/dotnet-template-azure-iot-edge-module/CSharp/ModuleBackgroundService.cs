@@ -23,15 +23,17 @@ internal class ModuleBackgroundService : BackgroundService
         _moduleClient = await ModuleClient.CreateFromEnvironmentAsync(settings);
 
         // Reconnect is not implented because we'll let docker restart the process when the connection is lost
+#pragma warning disable CS0618 // Type or member is obsolete
         _moduleClient.SetConnectionStatusChangesHandler((status, reason) => 
             _logger.LogWarning("Connection changed: Status: {status} Reason: {reason}", status, reason));
+#pragma warning restore CS0618 // Type or member is obsolete
 
         await _moduleClient.OpenAsync(cancellationToken);
 
         _logger.LogInformation("IoT Hub module client initialized.");
 
         // Register callback to be called when a message is received by the module
-        await _moduleClient.SetInputMessageHandlerAsync("input1", ProcessMessageAsync, null, cancellationToken);
+        await _moduleClient.SetInputMessageHandlerAsync("input1", ProcessMessageAsync, null!, cancellationToken);
     }
 
     async Task<MessageResponse> ProcessMessageAsync(Message message, object userContext)
@@ -53,6 +55,6 @@ internal class ModuleBackgroundService : BackgroundService
 
             _logger.LogInformation("Received message sent");
         }
-        return MessageResponse.Completed;
+        return MessageResponse.Completed!;
     }
 }

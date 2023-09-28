@@ -4,10 +4,10 @@
     "classifications": [
         "Console"
     ],
-    "name": "Azure IoT Edge Module",
-    "identity": "Azure.IoT.Edge.Module.CSharp",
-    "groupIdentity": "Azure.IoT.Edge.Module",
-    "shortName": "aziotedgemodule",
+    "name": "Azure E4K Edge Module",
+    "identity": "Microsoft.Azure.E4K.ModuleTemplate",
+    "groupIdentity": "Microsoft.Azure.E4K.ModuleTemplate",
+    "shortName": "azedgemodule",
     "tags": {
         "language": "C#",
         "type": "project"
@@ -29,6 +29,14 @@
             "type": "parameter",
             "defaultValue": "<registry>/<repo-name>",
             "replaces": "<repository>"
+        },
+        "samplemodule" : {
+            "type": "generated",
+            "generator": "casing",
+            "parameters": {
+                "source": "name",
+                "toLower": true
+            }
         }
     },
     "sources": [
