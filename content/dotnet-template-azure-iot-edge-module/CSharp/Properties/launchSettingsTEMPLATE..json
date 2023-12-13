@@ -3,7 +3,8 @@
     "SampleModule": {
       "commandName": "Project",
       "environmentVariables": {
-        "IotHubConnectionString": "<module_connection_string>"
+        "IotHubConnectionString": "<module_connection_string>",
+        "EdgeModuleCACertificateFile": "<cafile>"
       }
     }
   }

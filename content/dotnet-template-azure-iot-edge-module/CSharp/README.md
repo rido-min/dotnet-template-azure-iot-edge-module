@@ -1,4 +1,4 @@
-# IoT Edge Module Template for .NET 7
+# IoT Edge Module Template for .NET 8
 
 This project leverages the latest dotnet features to create docker images without using a `Dockerfile`. See more details in https://github.com/dotnet/sdk-container-builds
 
@@ -13,17 +13,25 @@ This project leverages the latest dotnet features to create docker images withou
 
 Set configuration variables
 
+```ps1
+$SUB_ID="<azure_sub>"
+$HUB_ID="<hubname>"
+$EDGE_ID="<edge_device>"
 ```
-SUB_ID=
-HUB_ID=
-EDGE_ID=
+
+```bash
+export SUB_ID=<azure_sub>
+export HUB_ID=<hubname>
+export EDGE_ID=<edge_device>
 ```
+
 
 ```bash
 az account set -s $SUB_ID
 az iot hub device-identity create -n $HUB_ID -d $EDGE_ID --edge-enabled
-sasKey=$(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
 az iot edge set-modules -n $HUB_ID -d $EDGE_ID -k deploy.json
+
+sasKey=$(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
 init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --modId=\$edgeHub --sasKey=$sasKey
 edgeHubConnStr=$(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m \$edgeHub  -o tsv)
 ```
@@ -31,8 +39,9 @@ edgeHubConnStr=$(az iot hub module-identity connection-string show -n $HUB_ID -d
 ```ps1
 az account set -s $SUB_ID
 az iot hub device-identity create -n $HUB_ID -d $EDGE_ID --edge-enabled
-$sasKey=(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
 az iot edge set-modules -n $HUB_ID -d $EDGE_ID -k deploy.json
+
+$sasKey=(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
 init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --modId=`$edgeHub --sasKey=$sasKey
 $edgeHubConnStr=(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m `$edgeHub  -o tsv)
 ```
@@ -40,13 +49,13 @@ $edgeHubConnStr=(az iot hub module-identity connection-string show -n $HUB_ID -d
 ## Run edgeHub-local
 
 ```ps1
-docker run -it --rm -e IotHubConnectionString="$edgeHubConnStr" -p 8883:8883 ghcr.io/ridomin/edgehub:local
 wget -Uri "https://raw.githubusercontent.com/ridomin/edgeHub-local/master/certs/ca.pem" -OutFile "ca.pem"
+docker run -it --rm -e IotHubConnectionString="$edgeHubConnStr" -p 8883:8883 ghcr.io/ridomin/edgehub:local
 ```
 
 ```bash
-docker run -it --rm -e IotHubConnectionString="$edgeHubConnStr" -p 8883:8883 ghcr.io/ridomin/edgehub:local
 curl "https://raw.githubusercontent.com/ridomin/edgeHub-local/master/certs/ca.pem" -o "ca.pem"
+docker run -it --rm -e IotHubConnectionString="$edgeHubConnStr" -p 8883:8883 ghcr.io/ridomin/edgehub:local
 ```
 
 
@@ -68,18 +77,12 @@ export EdgeModuleCACertificateFile="ca.pem"
 dotnet run
 ```
 
-
-
 ## Deploy Container
 
 ```
 dotnet publish --os linux --arch x64 -c Release /t:PublishContainer /p:ContainerRegistry=ridockers.azurecr.io /p:ContainerRepository=samplemodule
 az iot edge set-modules -n $HUB_ID -d $EDGE_ID -k deploy-samplemodule.json
 ```
-
-
-
-
 
 ## Debug
 
