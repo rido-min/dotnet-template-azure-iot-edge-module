@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 using System.Text;
+using System.Text.Json;
 
 namespace SampleModule;
 
@@ -15,6 +16,7 @@ internal class ModuleBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting Module");
         _cancellationToken = cancellationToken;
         MqttTransportSettings mqttSetting = new(TransportType.Mqtt_Tcp_Only);
         ITransportSettings[] settings = { mqttSetting };
@@ -39,9 +41,9 @@ internal class ModuleBackgroundService : BackgroundService
 
     private Task<MethodResponse> EchoAsync(MethodRequest methodRequest, object userContext)
     {
-        string payload = Encoding.UTF8.GetString(methodRequest.Data);
+        string payload = JsonSerializer.Deserialize<string>(methodRequest.DataAsJson)!;
         _logger.LogInformation("Received method call for echo: {payload}", payload);
-        return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(payload + payload), 200));
+        return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(JsonSerializer.Serialize<string>(payload + payload)), 200));
     }
 
     async Task<MessageResponse> ProcessMessageAsync(Message message, object userContext)
