@@ -25,39 +25,37 @@ export HUB_ID=<hubname>
 export EDGE_ID=<edge_device>
 ```
 
+## Create IoT Edge Device and Modules
 
 ```bash
 az account set -s $SUB_ID
 az iot hub device-identity create -n $HUB_ID -d $EDGE_ID --edge-enabled
 az iot edge set-modules -n $HUB_ID -d $EDGE_ID -k deploy.json
-
-sasKey=$(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
-init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --modId=\$edgeHub --sasKey=$sasKey
-edgeHubConnStr=$(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m \$edgeHub  -o tsv)
 ```
 
 ```ps1
 az account set -s $SUB_ID
 az iot hub device-identity create -n $HUB_ID -d $EDGE_ID --edge-enabled
 az iot edge set-modules -n $HUB_ID -d $EDGE_ID -k deploy.json
-
-$sasKey=(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
-init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --modId=`$edgeHub --sasKey=$sasKey
-$edgeHubConnStr=(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m `$edgeHub  -o tsv)
 ```
 
 ## Run edgeHub-local
 
 ```ps1
-wget -Uri "https://raw.githubusercontent.com/ridomin/edgeHub-local/master/certs/ca.pem" -OutFile "ca.pem"
+$sasKey=(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
+init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --modId=`$edgeHub --sasKey=$sasKey
+$edgeHubConnStr=(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m `$edgeHub  -o tsv)
+
 docker run -it --rm -e IotHubConnectionString="$edgeHubConnStr" -p 8883:8883 ghcr.io/ridomin/edgehub:local
 ```
 
 ```bash
-curl "https://raw.githubusercontent.com/ridomin/edgeHub-local/master/certs/ca.pem" -o "ca.pem"
+sasKey=$(az iot hub device-identity show -n $HUB_ID -d $EDGE_ID --query authentication.symmetricKey.primaryKey -o tsv)
+init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --modId=\$edgeHub --sasKey=$sasKey
+edgeHubConnStr=$(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m \$edgeHub  -o tsv)
+
 docker run -it --rm -e IotHubConnectionString="$edgeHubConnStr" -p 8883:8883 ghcr.io/ridomin/edgehub:local
 ```
-
 
 ## Run module locally
 
@@ -66,6 +64,7 @@ init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --mod
 $modConnStr=(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m samplemodule  -o tsv)
 $env:IotHubConnectionString="$modConnStr;GatewayHostName=localhost"
 $env:EdgeModuleCACertificateFile="ca.pem"
+wget -Uri "https://raw.githubusercontent.com/ridomin/edgeHub-local/master/certs/ca.pem" -OutFile "ca.pem"
 dotnet run
 ```
 
@@ -74,6 +73,7 @@ init-iotedge-module --hostname=$HUB_ID.azure-devices.net --edgeId=$EDGE_ID --mod
 modConnStr=$(az iot hub module-identity connection-string show -n $HUB_ID -d $EDGE_ID -m samplemodule  -o tsv)
 export IotHubConnectionString="$modConnStr;GatewayHostName=localhost"
 export EdgeModuleCACertificateFile="ca.pem"
+curl "https://raw.githubusercontent.com/ridomin/edgeHub-local/master/certs/ca.pem" -o "ca.pem"
 dotnet run
 ```
 
