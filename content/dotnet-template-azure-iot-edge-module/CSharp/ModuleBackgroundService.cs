@@ -30,8 +30,18 @@ internal class ModuleBackgroundService : BackgroundService
 
         _logger.LogInformation("IoT Hub module client initialized.");
 
+        await _moduleClient.SetMethodHandlerAsync("echo", EchoAsync, null, cancellationToken);
+        
         // Register callback to be called when a message is received by the module
         await _moduleClient.SetInputMessageHandlerAsync("input1", ProcessMessageAsync, null, cancellationToken);
+
+    }
+
+    private Task<MethodResponse> EchoAsync(MethodRequest methodRequest, object userContext)
+    {
+        string payload = Encoding.UTF8.GetString(methodRequest.Data);
+        _logger.LogInformation("Received method call for echo: {payload}", payload);
+        return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(payload + payload), 200));
     }
 
     async Task<MessageResponse> ProcessMessageAsync(Message message, object userContext)

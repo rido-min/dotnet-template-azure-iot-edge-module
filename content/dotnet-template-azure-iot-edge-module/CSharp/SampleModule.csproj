@@ -1,19 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Content Remove="Properties\launchSettingsTEMPLATE..json" />
+		<PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.42.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 	</ItemGroup>
-	<ItemGroup>
-	  <_WebToolingArtifacts Remove="Properties\launchSettingsTEMPLATE..json" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.42.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-		<PackageReference Include="Microsoft.NET.Build.Containers" Version="7.0.401" />
-	</ItemGroup>
+	 <ItemGroup>
+    <None Update="ca.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
